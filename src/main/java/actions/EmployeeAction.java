@@ -42,6 +42,9 @@ public class EmployeeAction extends ActionBase {
      */
     public void index() throws ServletException, IOException {
 
+        //管理者かどうかのチェック //追記
+        if (checkAdmin()) { //追記
+
         //指定されたページ数の一覧画面に表示するデータを取得
         int page = getPage();
         List<EmployeeView> employees = service.getPerPage(page);
@@ -63,6 +66,8 @@ public class EmployeeAction extends ActionBase {
 
         //一覧画面を表示
         forward(ForwardConst.FW_EMP_INDEX);
+
+        } //追記
 
     }
     /**
@@ -238,5 +243,30 @@ public class EmployeeAction extends ActionBase {
             //一覧画面にリダイレクト
             redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
         }
+
     }
+    /**
+     * ログイン中の従業員が管理者かどうかチェックし、管理者でなければエラー画面を表示
+     * true: 管理者 false: 管理者ではない
+     * @throws ServletException
+     * @throws IOException
+     */
+    private boolean checkAdmin() throws ServletException, IOException {
+
+        //セッションからログイン中の従業員情報を取得
+        EmployeeView ev = (EmployeeView) getSessionScope(AttributeConst.LOGIN_EMP);
+
+        //管理者でなければエラー画面を表示
+        if (ev.getAdminFlag() != AttributeConst.ROLE_ADMIN.getIntegerValue()) {
+
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+            return false;
+
+        } else {
+
+            return true;
+        }
+
+    }
+
 }
