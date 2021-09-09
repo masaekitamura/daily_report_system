@@ -49,6 +49,7 @@ public enum AttributeConst {
     REP_DATE("report_date"),
     REP_TITLE("title"),
     REP_CONTENT("content");
+    
 
     private final String text;
     private final Integer i;

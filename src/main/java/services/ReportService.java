@@ -153,5 +153,18 @@ public class ReportService extends ServiceBase {
         em.getTransaction().commit();
 
     }
+    /**
+     * 日報データを更新する
+     * @param rv 日報データ
+     */
+    public void updateLike(ReportView rv) {
+
+        em.getTransaction().begin();
+        Report r = findOneInternal(rv.getId()); // idでレコードを検索して変数に格納。
+        ReportConverter.copyViewToModel(r, rv); // rがDBから取ってきたレコード、rvがLikeCountを+1したレコード。
+                        // copy1viewToModelでDBを更新。
+        em.getTransaction().commit(); // commitで保存。
+
+    }
 
 }

@@ -113,7 +113,8 @@ public class ReportAction extends ActionBase {
                     getRequestParam(AttributeConst.REP_TITLE),
                     getRequestParam(AttributeConst.REP_CONTENT),
                     null,
-                    null);
+                    null,
+                    0); // ←この部分を追加
 
             //日報情報登録
             List<String> errors = service.create(rv);
@@ -229,7 +230,55 @@ public class ReportAction extends ActionBase {
                 redirect(ForwardConst.ACT_REP, ForwardConst.CMD_INDEX);
 
             }
+
+
         }
     }
+
+    public void updateLike() throws ServletException, IOException {
+
+        /*
+         * 以下のCSRF対策は、なりすましではないかの
+         * セキュリティチェックをしているので今回は不要。
+         */
+        //CSRF対策 tokenのチェック
+        // if (checkToken()) {
+
+          //idを条件に日報データを取得する
+            ReportView rv = service.findOne(toNumber(getRequestParam(AttributeConst.REP_ID)));
+
+            rv.setLikeCount(rv.getLikeCount()+1);
+
+          //日報データを更新する
+            service.updateLike(rv);
+
+            /*
+             *  以下のif~else文は新規登録があった場合の
+             *  エラー確認を行っているため今回は不要
+             *  イイネ昨日はDBから取り出して加算するのみの
+             *  処理なのでエラーが起こり得ない。
+             */
+            //if (errors.size() > 0) {
+                //更新中にエラーが発生した場合
+
+                //putRequestScope(AttributeConst.TOKEN, getTokenId()); //CSRF対策用トークン
+                //putRequestScope(AttributeConst.REPORT, rv); //入力された日報情報
+                //putRequestScope(AttributeConst.ERR, errors); //エラーのリスト
+
+              //編集画面を再表示
+                //forward(ForwardConst.FW_REP_SHOW);
+            //} else {
+                //更新中にエラーがなかった場合
+
+                //セッションに更新完了のフラッシュメッセージを設定
+                putSessionScope(AttributeConst.FLUSH, MessageConst.I_LIKE.getMessage());
+
+                //一覧画面にリダイレクト
+                redirect(ForwardConst.ACT_REP, ForwardConst.CMD_INDEX);
+
+            }
+
+        //}
+   // }
 
 }
